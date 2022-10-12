@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -89,13 +88,11 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			log.Println(string(body))
 			var t Data
 			err = json.Unmarshal(body, &t)
 			if err != nil {
 				panic(err)
 			}
-			log.Println(t)
 
 			jsonData := JSONData{
 				Status: Data{
@@ -111,6 +108,30 @@ func main() {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+
+			var waterStatus string
+			var windStatus string
+			water := jsonData.Status.Water
+			wind := jsonData.Status.Wind
+			if water <= 5 {
+				waterStatus = "aman"
+			} else if water < 9 {
+				waterStatus = "siaga"
+			} else {
+				waterStatus = "bahaya"
+			}
+
+			if wind <= 6 {
+				windStatus = "aman"
+			} else if wind < 16 {
+				windStatus = "siaga"
+			} else {
+				windStatus = "bahaya"
+			}
+
+			fmt.Println("Request masuk!")
+			fmt.Println("Wind:", jsonData.Status.Wind, "status:", windStatus)
+			fmt.Println("Water:", jsonData.Status.Water, "status:", waterStatus)
 		}
 	})
 
